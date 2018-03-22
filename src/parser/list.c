@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:31:04 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/20 22:02:54 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/22 15:54:34 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_tetri		*create_tetri(uint32_t data, char letter)
 
 	if (!(new = (t_tetri *)malloc(sizeof(*new))))
 		return (NULL);
-	new->tetri = data;
+	new->tetrimino = data;
 	new->letter = letter;
 	new->next = NULL;
 	return (new);

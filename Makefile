@@ -9,12 +9,12 @@ OBJ_DIR		= obj
 
 VPATH	 = $(SRC_DIR):$(addprefix $(SRC_DIR)/, $(PARSER_DIR) $(ALGO_DIR))
 
-SRC		= main.c parser.c algo.c list.c
+SRC		= main.c parser.c algo.c list.c utils.c
 
-OBJ		= $(SRC:.c=.o)
+OBJ		= $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 
-CFLAGS	= -Wall -Wextra -Werror -I./$(LIB_DIR)
-LFLAGS	= -L $(LIB_DIR) -lft
+CFLAGS	= -Wall -Wextra -Werror -I. -I$(LIB_DIR) -g
+LFLAGS	= -L$(LIB_DIR) -lft
 
 COMP	= $(CC) $(CFLAGS) -o $@ -c $<
 LINK	= $(CC) $(LFLAGS) -o $@ $(filter-out $(LIB_DIR)/$(LIB) $(OBJ_DIR), $^)
@@ -28,10 +28,10 @@ $(LIB_DIR)/$(LIB):
 	@make -C $(LIB_DIR)
 
 $(NAME): $(LIB_DIR)/$(LIB) $(OBJ_DIR) $(OBJ)
-	@$(LINK)
+	$(LINK)
 
 $(OBJ_DIR)/%.o: %.c
-	@$(COMP)
+	$(COMP)
 
 clean:
 	@rm $(OBJ) 2> /dev/null || true

@@ -6,17 +6,18 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:00:12 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/20 23:19:39 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/22 17:40:00 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "libft.h"
 #include "fillit.h"
 
-static void	count_links(const char buf[22])
+static int	count_links(const char buf[22])
 {
 	int	i;
 	int	links;
@@ -37,15 +38,14 @@ static void	count_links(const char buf[22])
 	return (0);
 }
 
-static int	is_valid(const char buf[22], int ret)
+static int	is_valid(const char buf[22], int ret, int sharp, int first_occur)
 {
 	int		tetri;
 	int		i;
-	int		first_occur;
 
-	i = 0;
+	i = -1;
 	tetri = 0;
-	while (buf[i] != 0)
+	while (++i < 20)
 	{
 		if (i % 5 < 4)
 		{
@@ -53,14 +53,18 @@ static int	is_valid(const char buf[22], int ret)
 				return (-1);
 			if (buf[i] == '#')
 			{
-				first_occur = i;
+				if (!first_occur)
+					first_occur = i;
 				tetri |= (1 << i);
+				++sharp;
 			}
 		}
 		else if (buf[i] != '\n')
 			return (-1);
-		++i;
 	}
+	if (sharp != 4 || (ret == 21 && buf[i] != '\n') || count_links(buf) == -1)
+		return (-1);
+	return ((tetri >> first_occur));
 }
 
 int			parse_file(t_fillit *data, const char *path)
@@ -76,10 +80,11 @@ int			parse_file(t_fillit *data, const char *path)
 	while ((ret = read(fd, buf, 21)) > 0)
 	{
 		if (ft_strlen(buf) < 20
-				|| !(new = (t_tetri *)malloc(sizeof(*new)))
-				|| (new->tetri = is_valid(buf, ret)) == -1
-				|| data->nb_tetri > 26)
+				|| !(new = create_tetri(is_valid(buf, ret, 0, 0),
+							data->letter++))
+				|| new->tetrimino == -1 || data->nb_tetri++ > 26)
 		{
+			ft_putendl_fd("Error", 2);
 			free_list(&data->list);
 			exit(EXIT_FAILURE);
 		}
