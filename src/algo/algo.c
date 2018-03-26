@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:00:31 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/22 19:48:26 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/26 19:18:27 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,20 @@
 #include "libft.h"
 #include "fillit.h"
 
-static void	place_tetri(int tetrimino, char *map, char mode, char chars[2])
+static void	place_tetri(int tetrimino, char *map, char mode, char letter)
 {
 	if (mode == PLACE)
 		while (tetrimino > 0)
 		{
-			if (*map != '\n')
-				*map = chars[tetrimino & 1];
+			if (tetrimino & 1)
+				*map = letter;
 			tetrimino >>= 1;
 			++map;
 		}
 	else
 		while (tetrimino > 0)
 		{
-			if (*map != '\n' && (tetrimino & 1) == 1)
+			if (tetrimino & 1)
 				*map = '.';
 			tetrimino >>= 1;
 			++map;
@@ -40,7 +40,7 @@ static int	can_place_tetri(char *map, int tetrimino)
 	while (*map && tetrimino)
 	{
 		if ((*map == '\n' || *map != '.') && (tetrimino & 1) == 1)
-				return (0);
+			return (0);
 		tetrimino >>= 1;
 		++map;
 	}
@@ -49,30 +49,29 @@ static int	can_place_tetri(char *map, int tetrimino)
 
 static int	solve(int pos, char *map, t_tetri *list)
 {
-	char	chars[2];
-
 	if (list == NULL)
 		return (1);
 	if (map[pos] == 0)
 		return (0);
 	if (can_place_tetri(map + pos, list->tetrimino) == 1)
 	{
-		chars[0] = '.';
-		chars[1] = list->letter;
-		place_tetri(list->tetrimino, map + pos, PLACE, chars);
+		place_tetri(list->tetrimino, map + pos, PLACE, list->letter);
 		ft_putendl(map);
 		if (solve(0, map, list->next) == 1)
 			return (1);
-		place_tetri(list->tetrimino, map + pos, CLEAR, chars);
+		place_tetri(list->tetrimino, map + pos, CLEAR, list->letter);
 	}
-	if (solve(pos + 1, map, list) == 1)
-		return (1);
-	return (0);
+	return (solve(pos + 1, map, list));
 }
 
 void		algo(t_fillit *data)
 {
-	data->map_size = get_next_psquare(data->nb_tetri * 4);
+	if (data->nb_tetri == 1 && list->tetrimino == 99)
+	{
+		scale_values(data->list, scale_down);
+		scale_values(data->list, scale_down);
+	}
+	data->map_size = 2;
 	if (!(data->map = create_map(data->map_size)))
 	{
 		free_list(&data->list);
@@ -80,7 +79,11 @@ void		algo(t_fillit *data)
 		exit(EXIT_FAILURE);
 	}
 	while (!solve(0, data->map, data->list))
+	{
 		data->map = grow_map(data->map, &data->map_size, &data->list);
+		if (data->map_size > 4)
+			scale_values(data->list, scale_up);
+	}
 	ft_putendl(data->map);
 	free(data->map);
 }

@@ -13,7 +13,7 @@ SRC		= main.c parser.c algo.c list.c utils.c
 
 OBJ		= $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 
-CFLAGS	= -Wall -Wextra -Werror -I. -I$(LIB_DIR) -g
+CFLAGS	= -Wall -Wextra -I. -I$(LIB_DIR) -g
 LFLAGS	= -L$(LIB_DIR) -lft
 
 COMP	= $(CC) $(CFLAGS) -o $@ -c $<
@@ -21,25 +21,25 @@ LINK	= $(CC) $(LFLAGS) -o $@ $(filter-out $(LIB_DIR)/$(LIB) $(OBJ_DIR), $^)
 
 all: $(NAME)
 
-$(OBJ_DIR):
-	@mkdir -p $@
-
 $(LIB_DIR)/$(LIB):
 	@make -C $(LIB_DIR)
 
-$(NAME): $(LIB_DIR)/$(LIB) $(OBJ_DIR) $(OBJ)
+$(NAME): $(LIB_DIR)/$(LIB) $(OBJ)
 	$(LINK)
 
 $(OBJ_DIR)/%.o: %.c
+	@mkdir -p $(OBJ_DIR)
 	$(COMP)
 
 clean:
 	@rm $(OBJ) 2> /dev/null || true
+	@make -C $(LIB_DIR) $@
 	@rm -rf $(OBJ_DIR)
 	@echo "cleaned .o files"
 
 fclean: clean
-	@rm $(NAME)
+	@rm $(NAME) 2> /dev/null || true
+	@make -C $(LIB_DIR) $@
 	@echo "removed binary"
 
 re: fclean all

@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:12:17 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/22 19:11:45 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/26 19:15:37 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 typedef struct	s_tetri
 {
-	int				tetrimino;
+	uint64_t		tetrimino;
 	char			letter;
 	struct s_tetri	*next;
 }				t_tetri;
@@ -40,8 +40,13 @@ void			free_list(t_tetri **list);
 t_tetri			*create_tetri(uint32_t data, char letter);
 char			*grow_map(char *map, uint32_t *cur_size, t_tetri **list);
 void			algo(t_fillit *data);
-uint32_t		get_next_psquare(uint32_t limit);
+uint32_t		resize_map(uint32_t limit, t_tetri *list);
 char			*create_map(uint32_t map_size);
 void			putnbr_base(uint32_t val, int base);
+void			scale_values(t_tetri *list);
+void			print_list(t_tetri *list);
+void			scale_up(uint64_t *new_val, uint64_t mask, uint8_t line_count);
+void			scale_down(uint64_t *new_val, uint64_t mask,
+		uint8_t line_count);
 
 #endif

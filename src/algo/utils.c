@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/22 16:07:55 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/22 19:11:29 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/26 19:13:28 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,12 @@
 #include "libft.h"
 #include "fillit.h"
 
-uint32_t		get_next_psquare(uint32_t limit)
-{
-	uint32_t	res;
-
-	res = 2;
-	while ((res * res) < limit)
-		++res;
-	return (res);
-}
-
-char			*grow_map(char *map, uint32_t *cur_size, t_tetri **list)
+char			*grow_map(char *map, uint32_t *map_size, t_tetri **list)
 {
 	char		*new_map;
 
-	*cur_size = get_next_psquare(*cur_size * *cur_size);
-	if (!(new_map = create_map(*cur_size)))
+	*map_size += 1;
+	if (!(new_map = create_map(*map_size)))
 	{
 		free_list(list);
 		ft_putendl_fd("Cannot allocate more memory, exit...", 2);
@@ -72,4 +62,44 @@ void			putnbr_base(uint32_t val, int base)
 		val /= base;
 	}
 	ft_putendl(a);
+}
+
+void		scale_up(uint64_t *new_val, uint64_t mask, uint8_t line_count)
+{
+	*new_val += (mask << line_count);
+}
+
+void		scale_down(uint64_t *new_val, uint64_t mask, uint8_t line_count)
+{
+	*new_val += (mask >> line_count);
+}
+
+void			scale_values(t_tetri *list,
+		void (*scale_ft)(uint64_t, uint64_t, uint8_t))
+{
+	uint64_t	mask;
+	uint64_t	new_val;
+	uint8_t		line_count;
+
+	while (list)
+	{
+		mask = 1;
+		new_val = 0;
+		line_count = 1;
+		while (list->tetrimino & mask)
+		{
+			new_val += mask;
+			mask <<= 1;
+		}
+		while ((mask <<= 1) < list->tetrimino)
+			if (list->tetrimino & mask)
+			{
+				scale_ft(&new_val, mask, line_count);
+				if (!(list->tetrimino & (mask << 1)))
+					++line_count;
+			}
+		if (list->tetrimino != 0xF)
+			list->tetrimino = new_val;
+		list = list->next;
+	}
 }

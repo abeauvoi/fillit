@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:00:12 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/22 17:40:00 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/26 18:48:20 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,45 +26,70 @@ static int	count_links(const char buf[22])
 	links = 0;
 	while (i < 20)
 	{
-		if (buf[i] == '#' && (((i + 1) < 20 && buf[i + 1] == '#')
-					|| ((i - 1) >= 0 && buf[i - 1] == '#')
-					|| ((i + 5) < 20 && buf[i + 5] == '#')
-					|| ((i - 5) >= 0 && buf[i - 5] == '#')))
-			++links;
-		++i;
+		if (buf[i] == '#')
+		{
+			if ((i + 1) < 20 && buf[i + 1] == '#')
+				++links;
+			if ((i - 1) >= 0 && buf[i - 1] == '#')
+				++links;
+			if ((i + 5) < 20 && buf[i + 5] == '#')
+				++links;
+			if ((i - 5) >= 0 && buf[i - 5] == '#')
+				++links;
+		}
+		i++;
 	}
 	if (links == 6 || links == 8)
 		return (1);
 	return (0);
 }
 
-static int	is_valid(const char buf[22], int ret, int sharp, int first_occur)
+static uint32_t	record_tetrimino(const char buf[22])
 {
-	int		tetri;
-	int		i;
+	int			i;
+	int			j;
+	uint32_t	tetrimino;
 
-	i = -1;
-	tetri = 0;
-	while (++i < 20)
+	i = 0;
+	j = -1;
+	tetrimino = 0;
+	while (i < 19)
+	{
+		if (buf[i] == '#')
+		{
+			if (j == -1)
+				j = i;
+			tetrimino |= (1 << (i - j));
+		}
+		++i;
+	}
+	return (tetrimino);
+}
+
+static uint32_t	is_valid(const char buf[22], int ret, int sharp, int dots)
+{
+	int	i;
+
+	i = 0;
+	while (i < 20)
 	{
 		if (i % 5 < 4)
 		{
 			if (buf[i] != '.' && buf[i] != '#')
-				return (-1);
-			if (buf[i] == '#')
-			{
-				if (!first_occur)
-					first_occur = i;
-				tetri |= (1 << i);
+				return (-1U);
+			else if (buf[i] == '#')
 				++sharp;
-			}
+			else if (buf[i] == '.')
+				++dots;
 		}
 		else if (buf[i] != '\n')
-			return (-1);
+			return (-1U);
+		++i;
 	}
-	if (sharp != 4 || (ret == 21 && buf[i] != '\n') || count_links(buf) == -1)
-		return (-1);
-	return ((tetri >> first_occur));
+	if ((ret == 21 && buf[i] != '\n')
+			|| sharp != 4 || dots != 12 || !count_links(buf))
+		return (-1U);
+	return (record_tetrimino(buf));
 }
 
 int			parse_file(t_fillit *data, const char *path)
@@ -73,6 +98,7 @@ int			parse_file(t_fillit *data, const char *path)
 	char	buf[22];
 	t_tetri	*new;
 	int		ret;
+	uint32_t	tetrimino;
 
 	if ((fd = open(path, O_RDONLY)) == -1)
 		return (-1);
@@ -80,18 +106,17 @@ int			parse_file(t_fillit *data, const char *path)
 	while ((ret = read(fd, buf, 21)) > 0)
 	{
 		if (ft_strlen(buf) < 20
-				|| !(new = create_tetri(is_valid(buf, ret, 0, 0),
-							data->letter++))
-				|| new->tetrimino == -1 || data->nb_tetri++ > 26)
+				|| (tetrimino = is_valid(buf, ret, 0, 0)) == -1U
+				|| !(new = create_tetri(tetrimino, data->letter++))
+				|| data->nb_tetri++ > 26)
 		{
-			ft_putendl_fd("Error", 2);
 			free_list(&data->list);
-			exit(EXIT_FAILURE);
+			return (-1);
 		}
 		enqueue(&data->list, new);
-		buf[20] = 0;
+		ft_bzero(buf, 21);
 	}
-	if (close(fd) == -1)
+	if (data->nb_tetri == 0 || close(fd) == -1)
 		return (-1);
 	return (0);
 }
