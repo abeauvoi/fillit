@@ -1,4 +1,4 @@
-NAME	 = Fillit
+NAME	 = fillit
 LIB		 = libft.a
 
 LIB_DIR		= libft
@@ -13,7 +13,7 @@ SRC		= main.c parser.c algo.c list.c utils.c
 
 OBJ		= $(addprefix $(OBJ_DIR)/,$(SRC:.c=.o))
 
-CFLAGS	= -Wall -Wextra -I. -I$(LIB_DIR) -g
+CFLAGS	= -Wall -Werror -Wextra -I. -I$(LIB_DIR)
 LFLAGS	= -L$(LIB_DIR) -lft
 
 COMP	= $(CC) $(CFLAGS) -o $@ -c $<
