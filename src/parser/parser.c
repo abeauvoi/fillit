@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:00:12 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/26 18:48:20 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/27 18:09:00 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,25 +98,25 @@ int			parse_file(t_fillit *data, const char *path)
 	char	buf[22];
 	t_tetri	*new;
 	int		ret;
-	uint32_t	tetrimino;
+	int		save_ret;
 
 	if ((fd = open(path, O_RDONLY)) == -1)
 		return (-1);
 	ft_bzero(buf, 22);
 	while ((ret = read(fd, buf, 21)) > 0)
 	{
-		if (ft_strlen(buf) < 20
-				|| (tetrimino = is_valid(buf, ret, 0, 0)) == -1U
-				|| !(new = create_tetri(tetrimino, data->letter++))
+		if (ft_strlen(buf) < 20 || (new = create_tetri(is_valid(buf, ret, 0, 0),
+						data->letter++)) == 0 || new->tetrimino == -1U
 				|| data->nb_tetri++ > 26)
 		{
 			free_list(&data->list);
 			return (-1);
 		}
+		save_ret = ret;
 		enqueue(&data->list, new);
 		ft_bzero(buf, 21);
 	}
-	if (data->nb_tetri == 0 || close(fd) == -1)
+	if (data->nb_tetri == 0 || close(fd) == -1 || save_ret != 20)
 		return (-1);
 	return (0);
 }

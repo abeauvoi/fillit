@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:00:31 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/26 19:18:27 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/27 19:04:43 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ static int	solve(int pos, char *map, t_tetri *list)
 	if (can_place_tetri(map + pos, list->tetrimino) == 1)
 	{
 		place_tetri(list->tetrimino, map + pos, PLACE, list->letter);
-		ft_putendl(map);
 		if (solve(0, map, list->next) == 1)
 			return (1);
 		place_tetri(list->tetrimino, map + pos, CLEAR, list->letter);
@@ -66,11 +65,10 @@ static int	solve(int pos, char *map, t_tetri *list)
 
 void		algo(t_fillit *data)
 {
-	if (data->nb_tetri == 1 && list->tetrimino == 99)
-	{
+	if (data->nb_tetri == 1)
 		scale_values(data->list, scale_down);
+	if (data->nb_tetri <= 2)
 		scale_values(data->list, scale_down);
-	}
 	data->map_size = 2;
 	if (!(data->map = create_map(data->map_size)))
 	{
@@ -81,7 +79,8 @@ void		algo(t_fillit *data)
 	while (!solve(0, data->map, data->list))
 	{
 		data->map = grow_map(data->map, &data->map_size, &data->list);
-		if (data->map_size > 4)
+		if (data->map_size > 4 || (data->nb_tetri == 2 && data->map_size == 4)
+				|| (data->nb_tetri == 1 && data->list->tetrimino == 99))
 			scale_values(data->list, scale_up);
 	}
 	ft_putendl(data->map);

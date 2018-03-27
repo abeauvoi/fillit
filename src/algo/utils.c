@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/22 16:07:55 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/26 19:13:28 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/27 18:08:35 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,21 +49,6 @@ char			*create_map(uint32_t map_size)
 	return (map);
 }
 
-void			putnbr_base(uint32_t val, int base)
-{
-	char		buf[33];
-	char		*a;
-
-	buf[32] = 0;
-	a = buf + 32;
-	while (val > 0)
-	{
-		*(--a) = "01"[val & (base - 1)];
-		val /= base;
-	}
-	ft_putendl(a);
-}
-
 void		scale_up(uint64_t *new_val, uint64_t mask, uint8_t line_count)
 {
 	*new_val += (mask << line_count);
@@ -75,7 +60,7 @@ void		scale_down(uint64_t *new_val, uint64_t mask, uint8_t line_count)
 }
 
 void			scale_values(t_tetri *list,
-		void (*scale_ft)(uint64_t, uint64_t, uint8_t))
+		void (*scale_ft)(uint64_t *, uint64_t, uint8_t))
 {
 	uint64_t	mask;
 	uint64_t	new_val;

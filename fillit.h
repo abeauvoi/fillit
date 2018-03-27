@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:12:17 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/26 19:15:37 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/03/27 18:07:58 by nnangis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,8 @@ char			*grow_map(char *map, uint32_t *cur_size, t_tetri **list);
 void			algo(t_fillit *data);
 uint32_t		resize_map(uint32_t limit, t_tetri *list);
 char			*create_map(uint32_t map_size);
-void			putnbr_base(uint32_t val, int base);
-void			scale_values(t_tetri *list);
-void			print_list(t_tetri *list);
+void			scale_values(t_tetri *list,
+		void (*scale_ft)(uint64_t *, uint64_t, uint8_t));
 void			scale_up(uint64_t *new_val, uint64_t mask, uint8_t line_count);
 void			scale_down(uint64_t *new_val, uint64_t mask,
 		uint8_t line_count);
