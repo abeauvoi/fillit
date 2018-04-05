@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 19:59:26 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/26 18:48:41 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/04/06 01:07:42 by abeauvoi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int		main(int argc, char *argv[])
 			ft_putendl("error");
 			return (-1);
 		}
+		data.map_size = 4;
 		algo(&data);
 		free_list(&data.list);
 	}

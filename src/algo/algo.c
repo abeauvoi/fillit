@@ -6,7 +6,7 @@
 /*   By: nnangis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/20 20:00:31 by nnangis           #+#    #+#             */
-/*   Updated: 2018/03/27 19:04:43 by nnangis          ###   ########.fr       */
+/*   Updated: 2018/04/06 01:08:41 by abeauvoi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,16 @@ static int	solve(int pos, char *map, t_tetri *list)
 
 void		algo(t_fillit *data)
 {
-	if (data->nb_tetri == 1)
+	if (data->nb_tetri == 1 && data->list->tetrimino == 99)
+	{
+		data->map_size = 2;
 		scale_values(data->list, scale_down);
+	}
 	if (data->nb_tetri <= 2)
+	{
+		data->map_size = 3;
 		scale_values(data->list, scale_down);
-	data->map_size = 2;
+	}
 	if (!(data->map = create_map(data->map_size)))
 	{
 		free_list(&data->list);
@@ -79,10 +84,8 @@ void		algo(t_fillit *data)
 	while (!solve(0, data->map, data->list))
 	{
 		data->map = grow_map(data->map, &data->map_size, &data->list);
-		if (data->map_size > 4 || (data->nb_tetri == 2 && data->map_size == 4)
-				|| (data->nb_tetri == 1 && data->list->tetrimino == 99))
-			scale_values(data->list, scale_up);
+		scale_values(data->list, scale_up);
 	}
-	ft_putendl(data->map);
+	ft_putstr(data->map);
 	free(data->map);
 }
